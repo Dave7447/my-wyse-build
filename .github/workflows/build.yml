@@ -14,17 +14,17 @@ jobs:
 
       - name: Build Image
         run: |
-          # 1. Automatically find and download the latest 24.10.6 Image Builder
-          IB_FILE=$(curl -s https://downloads.openwrt.org/releases/24.10.6/targets/x86/64/ | grep -o 'openwrt-imagebuilder-24.10.6-x86-64.Linux-x86_64.tar.xz' | head -n 1)
-          wget https://downloads.openwrt.org/releases/24.10.6/targets/x86/64/$IB_FILE
+          # 1. Download the Image Builder using the direct URL
+          wget https://downloads.openwrt.org/releases/24.10.6/targets/x86/64/openwrt-imagebuilder-24.10.6-x86-64.Linux-x86_64.tar.xz
           
-          tar xf $IB_FILE
+          # 2. Extract and enter directory
+          tar -xf openwrt-imagebuilder-24.10.6-x86-64.Linux-x86_64.tar.xz
           cd openwrt-imagebuilder-24.10.6-x86-64.Linux-x86_64
 
-          # 2. Update the repositories and fix signature issues internally
+          # 3. Disable signature checks to prevent the errors we saw locally
           sed -i 's/check_signature/0/g' include/download.mk || true
 
-          # 3. Run the build
+          # 4. Run the build with your package list
           make image \
             CONFIG_TARGET_EXT4_JOURNAL=y \
             CONFIG_GRUB_IMAGES=y \
@@ -33,7 +33,7 @@ jobs:
             ROOTFS_PARTSIZE=2048 \
             PACKAGES="adblock attendedsysupgrade-common banip base-files bash bind-dig block-mount bmon btrfs-progs busybox ca-bundle ca-certificates cgi-io clamav collectd collectd-mod-cpu collectd-mod-exec collectd-mod-interface collectd-mod-iwinfo collectd-mod-load collectd-mod-memory collectd-mod-network collectd-mod-rrdtool collectd-mod-sqm crowdsec-firewall-bouncer curl diffutils dnsmasq docker-compose docker dockerd dropbear e2fsprogs file firewall4 freshclam fstools fwtool gawk getrandom grub2-bios-setup hostapd-common iftop intel-microcode iperf3 iptables-mod-extra iptables-mod-ipopt iptables-zz-legacy iw iwinfo jshn jsonfilter logrotate lsblk lscpu lsd lsns lynx mkf2fs msmtp msmtp-mta mtd nfs-kernel-server nftables-json odhcp6c odhcpd-ipv6only openssh-sftp-server openssl-util owut parted partx-utils ppp ppp-mod-pppoe procd procd-seccomp procd-ujail python3-base python3-pip qrencode resize2fs resolveip rpcbind rpcd runc samba4-server shadow-common shadow-useradd speedtest-netperf sqm-scripts sudo tc-tiny tcpdump telegraf-full tini ttyd ubox ubus ubusd uci uclient-fetch ucode uhttpd unbound-control unbound-daemon urandom-seed urngd usb-modeswitch usbutils usign wget-ssl wifi-scripts wireguard-tools wireless-regdb wpad-openssl libustream-mbedtls luci-app-adblock luci-app-attendedsysupgrade luci-app-banip luci-app-crowdsec-firewall-bouncer luci-app-dockerman luci-app-package-manager luci-app-sqm luci-app-statistics luci-app-unbound luci-base luci-compat luci-light luci-proto-ipv6 luci-proto-ppp luci-proto-wireguard luci-ssl"
 
-          # 4. Move output
+          # 5. Prepare output
           mkdir -p ../output
           cp bin/targets/x86/64/*-generic-ext4-combined-efi.img.gz ../output/
 
