@@ -15,7 +15,7 @@ jobs:
       - name: Build Image
         run: |
           # 1. Download the Image Builder using the direct URL
-          wget https://downloads.openwrt.org/releases/24.10.6/targets/x86/64/openwrt-imagebuilder-24.10.6-x86-64.Linux-x86_64.tar.xz
+          wget https://downloads.openwrt.org/releases/24.10.6/targets/x86/64/openwrt-imagebuilder-24.10.6-x86-64.Linux-x86_64.tar.zstd
           
           # 2. Extract and enter directory
           tar -xf openwrt-imagebuilder-24.10.6-x86-64.Linux-x86_64.tar.xz
